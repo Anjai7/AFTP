@@ -24,11 +24,11 @@ A high-performance, UDP-based file transfer protocol designed for speed and reli
 
 Traditional FTP uses TCP, which provides reliability but introduces performance bottlenecks:
 
-![FTP TCP Behavior](images/active.svg)
+![FTP TCP Behavior](active.svg)
 
 *TCP's window sliding mechanism in Wireshark capture*
 
-![FTP Wireshark Analysis](images/ftp_wireshark.png)
+![FTP Wireshark Analysis](ftp_wireshark.png)
 
 As shown in the Wireshark capture, FTP waits for each ACK before sending the next packet batch, creating unnecessary delays.
 
@@ -41,7 +41,7 @@ AFTP eliminates waiting periods by:
 - **Smart Recovery**: Missing packets trigger specific RESEND requests
 - **Dynamic Buffering**: Adaptive buffer management based on network conditions
 
-![AFTP Flow Diagram](images/aftp_flow.svg)
+![AFTP Flow Diagram](aftp_flow.svg)
 
 *AFTP's continuous streaming approach with batch acknowledgments*
 
@@ -140,7 +140,7 @@ Transfer completed successfully!
 
 ### Wireshark Analysis
 
-![AFTP Wireshark Capture](images/aftp_test.png)
+![AFTP Wireshark Capture](aftp_test.png)
 
 *Wireshark capture showing batched ACK behavior (server: port 8888, client: port 45312)*
 
@@ -169,7 +169,7 @@ AFTP/
 ├── protocol.h          # Protocol constants and structures
 ├── server.c           # Server implementation
 ├── client.c           # Client implementation
-├── images/            # Documentation images
+├──             # Documentation images
 │   ├── active.svg
 │   ├── ftp_wireshark.png
 │   ├── aftp_flow.svg
