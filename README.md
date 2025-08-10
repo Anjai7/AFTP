@@ -1,10 +1,10 @@
-# 📦 AFTP - Advanced File Transfer Protocol ![image](UDP-based)
+# 📦 AFTP - Advanced File Transfer Protocol (UDP-based)
 
 ---
 
 ## 🔍 What is AFTP?
 
-**AFTP ![image](Advanced File Transfer Protocol)** is a custom file transfer system built over **UDP**, focusing on **reliability, speed, and simplicity**. Unlike traditional FTP or TCP-based transfers, AFTP is fully built using **UDP sockets**, and handles reliability at the application level through custom logic.
+**AFTP (Advanced File Transfer Protocol)** is a custom file transfer system built over **UDP**, focusing on **reliability, speed, and simplicity**. Unlike traditional FTP or TCP-based transfers, AFTP is fully built using **UDP sockets**, and handles reliability at the application level through custom logic.
 
 It transfers files in chunks, automatically handles lost packets, and acknowledges successful delivery — all without stopping or waiting, preserving UDP's low-latency behavior.
 
@@ -18,12 +18,13 @@ FTP normally uses TCP, which is reliable but slower because of extra steps like 
 lets see that in wire shark
 
 ![image](Pasted image 20250718202433.png)
-Here in the FTP protocol we could see for that each window slide![image](here it is 2 packets) there is a ACK send back and only after the server receives it the next packet or a slide of packet is send 
+Here in the FTP protocol we could see for that each window slide(here it is 2 packets) there is a ACK send back and only after the server receives it the next packet or a slide of packet is send 
 
 
 ### AFTP solves this by:
 
  In our AFTP approach instead of the waiting for the ACK the server keeps sending data and if a ACK is recived for a batch a window slide it will remove the batch from buffer if a packet is not recived it will send REQ to the server and makeing the batch bigger like 10 packets.
+
 ![image](deepseek_mermaid_20250719_7fb7ee.svg)
 
 ---
@@ -41,10 +42,10 @@ For the base have decided the rules for the protocol but during developing somet
     - Client → `HELLO <filename>`
     - Server → `FILE_INFO <size, total_chunks, chunk_size>`        
 - **Transfer**
-    - Server sends chunks continuously ![image](`chunk_id + data`)
+    - Server sends chunks continuously (`chunk_id + data`)
     - No waiting for ACKs
 - **ACK**
-    - Client → `ACK <last_chunk_id>` ![image](after receiving a group)
+    - Client → `ACK <last_chunk_id>` (after receiving a group)
     - Server deletes buffered chunks up to that ID
 - **Resend**
     - Client → `RESEND <missing_chunk_id>`
@@ -64,24 +65,31 @@ AFTP
 └── server.c
 Now testing out with basic hello socket program since we are on same network use 2 terminals tabs to run the program
 client
+
 ![image](Pasted image 20250718210730.png)
 server
+
 ![image](Pasted image 20250718210809.png)
 Also captured the request in wireshark
+
 ![image](Pasted image 20250718211018.png)
 #### Step 2
 Now that the packet is being send lets try to send a file and save it 
 client
+
 ![image](Pasted image 20250718212144.png)
 server
+
 ![image](Pasted image 20250718212228.png)
 wireshark
+
 ![image](Pasted image 20250718212305.png)
+
 ![image](Pasted image 20250718212354.png)
 here as you can see the file is send and received successfully 
 #### Step 3
 Since the file is being transferred lets now define the chunks size and stuffs
-We need define what will be send on a packet except the actual data![image](payload)
+We need define what will be send on a packet except the actual data(payload)
 other than that we need to chunk size ,chunk id,time-out for removing from buffer in server,time-out for re sending the REQ for lost  packets,window slide or batch size the number of packets going to be considered a batch
 And now to define this lets create a new file called protocol.h this structures will be used by both server and client
 
@@ -94,13 +102,17 @@ And now to define this lets create a new file called protocol.h this structures 
 
 After defining the size etc lets check if the code works 
 server
+
 ![image](Pasted image 20250719124701.png)
 client
+
 ![image](Pasted image 20250719124750.png)
 wireshark
+
 ![image](Pasted image 20250719124908.png)
 here we can see for each 10 packets received there is one ACK sent back we can see it by seeing the ports 8888 is the server the sender and 45312 is the client the receiver 
 also checked if there is any difference between send and received file 
+
 ![image](Pasted image 20250719125141.png)
 here you can see there is no output for the command that means there is no difference between them 
 but it took like 1 minutes to complete the transfer which is quiet a lot for a 9.6mb text file also since this done on a single device there is no packet loss thus you can see no REQ for the unrecived chunks.
@@ -114,10 +126,10 @@ The next step now is to check if it works on 2 different devices on same network
 
 | Aspect               | FTP                  | AFTP                            |
 |----------------------|----------------------|----------------------------------|
-| Speed                | Slower ![image](handshakes)  | Faster ![image](continuous sending)     |
+| Speed                | Slower (handshakes)  | Faster (continuous sending)     |
 | Packet Loss Handling | TCP automatic retry  | Client sends `RESEND` requests  |
 | Flow Control         | TCP buffers/window   | Manual chunk buffering          |
-| ACK Behavior         | Silent ![image](in TCP)      | Batched `ACK` after chunks      |
+| ACK Behavior         | Silent (in TCP)      | Batched `ACK` after chunks      |
 | Chunk Deletion       | N/A                  | After ACK or timeout            |
 
 ---
