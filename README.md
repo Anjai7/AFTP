@@ -14,7 +14,7 @@ It transfers files in chunks, automatically handles lost packets, and acknowledg
 
 ### Problems with plain FTP:
 FTP normally uses TCP, which is reliable but slower because of extra steps like connection setup and acknowledgments. To make transfers faster, we plan to create our own file transfer protocol using UDP and handle reliability ourselves.
-![image](active.svg)
+![img](active.svg)
 lets see that in wire shark
 
 ![image](Pasted image 20250718202433.png)
@@ -25,7 +25,7 @@ Here in the FTP protocol we could see for that each window slide(here it is 2 pa
 
  In our AFTP approach instead of the waiting for the ACK the server keeps sending data and if a ACK is recived for a batch a window slide it will remove the batch from buffer if a packet is not recived it will send REQ to the server and makeing the batch bigger like 10 packets.
 
-![image](deepseek_mermaid_20250719_7fb7ee.svg)
+![img](deepseek_mermaid_20250719_7fb7ee.svg)
 
 ---
 
