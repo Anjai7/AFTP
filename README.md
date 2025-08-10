@@ -14,18 +14,17 @@ It transfers files in chunks, automatically handles lost packets, and acknowledg
 
 ### Problems with plain FTP:
 FTP normally uses TCP, which is reliable but slower because of extra steps like connection setup and acknowledgments. To make transfers faster, we plan to create our own file transfer protocol using UDP and handle reliability ourselves.
-![img](active.svg)
+![image](active.svg)
 lets see that in wire shark
 
-![image](Pasted image 20250718202433.png)
+![image](Pasted%20image%2020250718202433.png)
 Here in the FTP protocol we could see for that each window slide(here it is 2 packets) there is a ACK send back and only after the server receives it the next packet or a slide of packet is send 
 
 
 ### AFTP solves this by:
 
  In our AFTP approach instead of the waiting for the ACK the server keeps sending data and if a ACK is recived for a batch a window slide it will remove the batch from buffer if a packet is not recived it will send REQ to the server and makeing the batch bigger like 10 packets.
-
-![img](deepseek_mermaid_20250719_7fb7ee.svg)
+![image](deepseek_mermaid_20250719_7fb7ee.svg)
 
 ---
 
@@ -65,27 +64,20 @@ AFTP
 └── server.c
 Now testing out with basic hello socket program since we are on same network use 2 terminals tabs to run the program
 client
-
-![image](Pasted image 20250718210730.png)
+![image](Pasted%20image%2020250718210730.png)
 server
-
-![image](Pasted image 20250718210809.png)
+![image](Pasted%20image%2020250718210809.png)
 Also captured the request in wireshark
-
-![image](Pasted image 20250718211018.png)
+![image](Pasted%20image%2020250718211018.png)
 #### Step 2
 Now that the packet is being send lets try to send a file and save it 
 client
-
-![image](Pasted image 20250718212144.png)
+![image](Pasted%20image%2020250718212144.png)
 server
-
-![image](Pasted image 20250718212228.png)
+![image](Pasted%20image%2020250718212228.png)
 wireshark
-
-![image](Pasted image 20250718212305.png)
-
-![image](Pasted image 20250718212354.png)
+![image](Pasted%20image%2020250718212305.png)
+![image](Pasted%20image%2020250718212354.png)
 here as you can see the file is send and received successfully 
 #### Step 3
 Since the file is being transferred lets now define the chunks size and stuffs
@@ -102,18 +94,14 @@ And now to define this lets create a new file called protocol.h this structures 
 
 After defining the size etc lets check if the code works 
 server
-
-![image](Pasted image 20250719124701.png)
+![image](Pasted%20image%2020250719124701.png)
 client
-
-![image](Pasted image 20250719124750.png)
+![image](Pasted%20image%2020250719124750.png)
 wireshark
-
-![image](Pasted image 20250719124908.png)
+![image](Pasted%20image%2020250719124908.png)
 here we can see for each 10 packets received there is one ACK sent back we can see it by seeing the ports 8888 is the server the sender and 45312 is the client the receiver 
 also checked if there is any difference between send and received file 
-
-![image](Pasted image 20250719125141.png)
+![image](Pasted%20image%2020250719125141.png)
 here you can see there is no output for the command that means there is no difference between them 
 but it took like 1 minutes to complete the transfer which is quiet a lot for a 9.6mb text file also since this done on a single device there is no packet loss thus you can see no REQ for the unrecived chunks.
 #### Step 4
